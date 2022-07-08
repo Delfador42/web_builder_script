@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import Pdf from '../files/a.pdf';
+import Pdf from '../files/q.pdf';
 export default function Page1() {
 
       return (

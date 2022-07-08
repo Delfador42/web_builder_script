@@ -1,9 +1,6 @@
-
-  import React, { Component } from 'react';
-  
-  import Pdf from 'b.pdf';
-  
-  export default function Page1() {
+import React, { Component } from 'react';
+import Pdf from '../files/b.pdf';
+export default function Page1() {
 
       return (
           <div className = "pdf_container">

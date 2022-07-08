@@ -28,14 +28,14 @@ from os.path import isfile, join
 
 
 # Directory that stores pdf files
-pdf_dir='/Users/Tal/work/blog_website/script' #***CHANGE***
+pdf_dir='/Users/Tal/work/blog_website/script/files' #***CHANGE***
 
 # All files in pdf_dir
 files = [f for f in os.listdir(pdf_dir) if isfile(join(pdf_dir, f))]
 
 def trackpdfs(file_name):
   # Create file to track pdfs in pdf_dir
-  with open(file_name, 'w') as f: #***CHANGE***
+  with open(file_name, 'w') as f: 
     for file in files:
       if file.endswith('.pdf'):
         f.write(file+"\n")
@@ -61,9 +61,8 @@ def update_website():
   # Create an list of files from current_pdfs and track_pdf_files
   current_pdfs = create_file_list('current_pdfs')
   old_pdfs = create_file_list('track_pdf_files')
-  print(f'Current pdfs {current_pdfs}')
-  print(f'Old pdfs {old_pdfs}')
-  print(f'This is the sorted list')
+  print(current_pdfs)
+  print(old_pdfs)
   current_pdfs.sort()
   old_pdfs.sort()
   print(current_pdfs)
@@ -75,20 +74,21 @@ def update_website():
 
 
 
-def build_page():
+def build_pagejs():
 
+  page_num = 1 # Page Count
+  pages_dir = "/Users/Tal/work/blog_website/script/pages" #***CHANGE***
+  if not os.path.exists(pages_dir):
+    os.system(f"mkdir {pages_dir}")
+
+  # Create a list of current pdfs from the current_pdfs file
   current_pdfs = create_file_list('current_pdfs')
-  page_num = 1
-  for pdf in current_pdfs:
-    page1 = """
-  import React, { Component } from 'react';
-  """
-    page2 = f"""
-  import Pdf from '{pdf}';
-  """
 
-    page3 = """
-  export default function Page1() {
+  # Create a Page#.js for each pdf in the pdf_dir
+  for pdf in current_pdfs:
+    page1 = """import React, { Component } from 'react';"""
+    page2 = f"""\nimport Pdf from '../files/{pdf}';"""
+    page3 = """\nexport default function Page1() {
 
       return (
           <div className = "pdf_container">
@@ -98,29 +98,55 @@ def build_page():
   }
   """
     page = page1+page2+page3
-    pages_dir = "/Users/Tal/work/blog_website/script/pages"
-    if not os.path.exists(pages_dir):
-      os.system(f"mkdir {pages_dir}")
-    page_name = pages_dir+"/page"+str(page_num)+".js"
+    page_name = pages_dir+"/Page"+str(page_num)+".js"
     page_num += 1
-    print(page_name)
-    print(page_num)
 
-    # Create page#.js in pages_dir
-    with open(page_name, 'w') as f: #***CHANGE***
+    # Create Page#.js in pages_dir
+    with open(page_name, 'w') as f: 
           f.write(page)
     f.close()
-    print(page)
+
+  # Create the home page in the pages_dir
+  home_page = """export default function Home() {
+      return <h1>Home</h1>
+  }
+  """
+  home_page_name = pages_dir+"/Home.js"
+  with open(home_page_name, 'w') as f: 
+        f.write(home_page)
+  f.close()
 
 
+# Build Routes
+def build_routesjs():
+  routejs = "/Users/Tal/work/blog_website/script/components/Routes.js" #***CHANGE***
+
+  page_num = 1
+  import_string = """import Home from "../pages/Home" """
+  routes_string = """export const routes = [\n{path: "/",main: () => <Home />,},"""
+
+  # Create a list of current pdfs from the current_pdfs file
+  current_pdfs = create_file_list('current_pdfs')
+
+  # Build import string
+  for pdf in current_pdfs:
+    import_string += f"""\nimport Page{page_num} from "../pages/Page{page_num}";"""
+    routes_string += f"""\n{{path: "/Page{page_num}",main: () => <Page{page_num} />,}}, """
+    page_num += 1
+  routes_string += "\n];"
+
+  with open(routejs, 'w') as f: 
+        f.write(import_string+"\n")
+        f.write(routes_string)
+  f.close()
 
 
-# Check for changes to files (ie, rename, deletions, additions)
-# Create a temporary file to check with the track_pdf_files file
+# Create a file of current pdfs
 trackpdfs('current_pdfs')
 
 
 
+# Check for changes to files (ie, rename, deletions, additions)
 # Rebuild the site with list of pdfs every time a change is made
 # Compare lists 
 if update_website():
@@ -129,8 +155,8 @@ if update_website():
 else:
   print("The website does not update")
 
-build_page()
-
+build_pagejs()
+build_routesjs()
 """
 * You can build each page with f multi-line strings
 * Build the pages directory from scratch
