@@ -28,7 +28,7 @@ from os.path import isfile, join
 
 
 # Directory that stores pdf files
-pdf_dir='/Users/Tal/work/blog_website/script/files' #***CHANGE***
+pdf_dir='/Users/Tal/work/blog_website/sidebar/src/files' #***CHANGE***
 
 # All files in pdf_dir
 files = [f for f in os.listdir(pdf_dir) if isfile(join(pdf_dir, f))]
@@ -77,9 +77,10 @@ def update_website():
 def build_pagejs():
 
   page_num = 1 # Page Count
-  pages_dir = "/Users/Tal/work/blog_website/script/pages" #***CHANGE***
-  if not os.path.exists(pages_dir):
-    os.system(f"mkdir {pages_dir}")
+  pages_dir = "/Users/Tal/work/blog_website/sidebar/src/pages" #***CHANGE***
+  # Remove all pages
+  os.system(f"rm -rf {pages_dir}")
+  os.system(f"mkdir {pages_dir}")
 
   # Create a list of current pdfs from the current_pdfs file
   current_pdfs = create_file_list('current_pdfs')
@@ -117,9 +118,9 @@ def build_pagejs():
   f.close()
 
 
-# Build Routes
+# Build Routes.js
 def build_routesjs():
-  routejs = "/Users/Tal/work/blog_website/script/components/Routes.js" #***CHANGE***
+  routejs = "/Users/Tal/work/blog_website/sidebar/src/components/Routes.js" #***CHANGE***
 
   page_num = 1
   import_string = """import Home from "../pages/Home" """
@@ -140,6 +141,59 @@ def build_routesjs():
         f.write(routes_string)
   f.close()
 
+# Build App.js
+def build_appjs():
+  appjs = "/Users/Tal/work/blog_website/sidebar/src/App.js"
+  appjs_string1 = """import * as React from "react";
+  import { Route, Routes, Link } from "react-router-dom";
+  import { routes } from './components/Routes'
+  """
+  file_list = create_file_list('current_pdfs')
+  file_list.insert(0,"")
+  appjs_string2 = f""" var filename ={file_list} ; """
+  appjs_string3 = """
+export default function App() {
+  return (
+    <div>
+      <Link className="site-title" to="/">Site Title</Link>
+    <div className="wrapper">
+      <div className="sidebar">
+        <ul className="nav">
+"""
+  appjs_string4 = ""
+
+  # Create a list of current pdfs from the current_pdfs file
+  current_pdfs = create_file_list('current_pdfs')
+  # Build links
+  page_num = 1
+  for pdf in current_pdfs:
+    appjs_string4 += f"""\n<li><Link to="Page{page_num}">{{filename[{page_num}]}}</Link></li>"""
+    page_num += 1
+
+  appjs_string5 = """
+        </ul>
+        <Routes>
+          {routes.map(({ path }) => (
+            <Route key={path} path={path}  />
+          ))}
+        </Routes>
+      </div>
+
+      <Routes>
+        {routes.map(({ path, main }) => (
+          <Route key={path} path={path} element={main()} />
+        ))}
+      </Routes>
+    </div>
+
+    </div>
+  );
+}
+"""
+  appjs_string = appjs_string1 + appjs_string2 + appjs_string3 + appjs_string4 + appjs_string5
+  with open(appjs, 'w') as f: 
+        f.write(appjs_string)
+  f.close()
 
 # Create a file of current pdfs
 trackpdfs('current_pdfs')
@@ -157,6 +211,7 @@ else:
 
 build_pagejs()
 build_routesjs()
+build_appjs()
 """
 * You can build each page with f multi-line strings
 * Build the pages directory from scratch
