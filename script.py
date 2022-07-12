@@ -26,9 +26,12 @@ import os
 from os import listdir
 from os.path import isfile, join
 
+root_dir='/Users/Tal/work/blog_website/sidebar/src'
+test_dir=f'{root_dir}/files'
+print(test_dir)
 
 # Directory that stores pdf files
-pdf_dir='/Users/Tal/work/blog_website/sidebar/src/files' #***CHANGE***
+pdf_dir=f'{root_dir}/files' #***CHANGE***
 
 # All files in pdf_dir
 files = [f for f in os.listdir(pdf_dir) if isfile(join(pdf_dir, f))]
@@ -73,7 +76,8 @@ def update_website():
 def build_pagejs():
 
   page_num = 1 # Page Count
-  pages_dir = "/Users/Tal/work/blog_website/sidebar/src/pages" #***CHANGE***
+  # Directory for Page#.js
+  pages_dir = f"{root_dir}/pages" #***CHANGE***
   # Remove all pages
   os.system(f"rm -rf {pages_dir}")
   os.system(f"mkdir {pages_dir}")
@@ -116,7 +120,8 @@ def build_pagejs():
 
 # Build Routes.js
 def build_routesjs():
-  routejs = "/Users/Tal/work/blog_website/sidebar/src/components/Routes.js" #***CHANGE***
+  # Directory for Routes.js
+  routejs = f"{root_dir}/components/Routes.js" #***CHANGE***
 
   page_num = 1
   import_string = """import Home from "../pages/Home" """
@@ -139,7 +144,8 @@ def build_routesjs():
 
 # Build App.js
 def build_appjs():
-  appjs = "/Users/Tal/work/blog_website/sidebar/src/App.js"
+  # Directory for App.js
+  appjs = f"{root_dir}/App.js"
   appjs_string1 = """import * as React from "react";
   import { Route, Routes, Link } from "react-router-dom";
   import { routes } from './components/Routes'
