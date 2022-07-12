@@ -45,6 +45,8 @@ def trackpdfs(file_name):
   f.close()
 
 def create_file_list(file_name):
+  if not os.path.exists(file_name):
+    os.system(f"touch {file_name}")
   f = open(file_name, "r")
   pdfs = f.read().splitlines()
   f.close()
