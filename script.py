@@ -28,6 +28,12 @@ from os.path import isfile, join
 
 root_dir='/Users/Tal/work/blog_website/sidebar/src'
 
+# Tracks the pdfs currently in the files directory
+file_name1 = ".current_pdfs"
+
+# Tracks the pdfs that were the files directory the last time this script ran
+file_name2 = ".track_pdf_files"
+
 # Directory that stores pdf files
 pdf_dir=f'{root_dir}/files' #***CHANGE***
 
@@ -63,8 +69,8 @@ Make a list of current and old, if they are not the same update, you don't need 
 
 def update_website():
   # Create an list of files from current_pdfs and track_pdf_files
-  current_pdfs = create_file_list('current_pdfs')
-  old_pdfs = create_file_list('track_pdf_files')
+  current_pdfs = create_file_list(file_name1)
+  old_pdfs = create_file_list(file_name2)
   current_pdfs.sort()
   old_pdfs.sort()
   if current_pdfs == old_pdfs:
@@ -84,7 +90,7 @@ def build_pagejs():
   os.system(f"mkdir {pages_dir}")
 
   # Create a list of current pdfs from the current_pdfs file
-  current_pdfs = create_file_list('current_pdfs')
+  current_pdfs = create_file_list(file_name1)
 
   # Create a Page#.js for each pdf in the pdf_dir
   for pdf in current_pdfs:
@@ -129,7 +135,7 @@ def build_routesjs():
   routes_string = """export const routes = [\n{path: "/",main: () => <Home />,},"""
 
   # Create a list of current pdfs from the current_pdfs file
-  current_pdfs = create_file_list('current_pdfs')
+  current_pdfs = create_file_list(file_name1)
 
   # Build import string
   for pdf in current_pdfs:
@@ -151,7 +157,7 @@ def build_appjs():
   import { Route, Routes, Link } from "react-router-dom";
   import { routes } from './components/Routes'
   """
-  file_list = create_file_list('current_pdfs')
+  file_list = create_file_list(file_name1)
   file_list.insert(0,"")
   #Strip off .pdf for the tab names
   name_list = []
@@ -171,7 +177,7 @@ export default function App() {
   appjs_string4 = ""
 
   # Create a list of current pdfs from the current_pdfs file
-  current_pdfs = create_file_list('current_pdfs')
+  current_pdfs = create_file_list(file_name1)
   # Build links
   page_num = 1
   for pdf in current_pdfs:
@@ -204,8 +210,7 @@ export default function App() {
   f.close()
 
 # Create a file of current pdfs
-trackpdfs('current_pdfs')
-
+trackpdfs(file_name1)
 
 
 # Check for changes to files (ie, rename, deletions, additions)
@@ -232,6 +237,6 @@ build_appjs()
 
 
 # Update track_pdf_files with current list of pdfs in pdf_dir
-trackpdfs('track_pdf_files')
+trackpdfs(file_name2)
 
 
