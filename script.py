@@ -150,7 +150,12 @@ def build_appjs():
   """
   file_list = create_file_list('current_pdfs')
   file_list.insert(0,"")
-  appjs_string2 = f""" var filename ={file_list} ; """
+  #Strip off .pdf for the tab names
+  name_list = []
+  for file in file_list:
+    name = os.path.splitext(file)[0]
+    name_list.append(name)
+  appjs_string2 = f""" var filename ={name_list} ; """
   appjs_string3 = """
 export default function App() {
   return (

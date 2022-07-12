@@ -1,0 +1,9 @@
+Have a project root var
+
+track_pdf_files not created
+
+
+BREAK: if pdf is removed website breaks 
+  FIX: run the script
+BREAK: if pdf is moved into files directory (This is occastional, if it breaks run the fix)
+  FIX: docker-compose down; docker-compose up -d
