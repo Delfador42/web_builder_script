@@ -27,8 +27,6 @@ from os import listdir
 from os.path import isfile, join
 
 root_dir='/Users/Tal/work/blog_website/sidebar/src'
-test_dir=f'{root_dir}/files'
-print(test_dir)
 
 # Directory that stores pdf files
 pdf_dir=f'{root_dir}/files' #***CHANGE***
@@ -44,6 +42,7 @@ def trackpdfs(file_name):
         f.write(file+"\n")
   f.close()
 
+# Creates a list of pdf names 
 def create_file_list(file_name):
   if not os.path.exists(file_name):
     os.system(f"touch {file_name}")
@@ -221,6 +220,8 @@ else:
 build_pagejs()
 build_routesjs()
 build_appjs()
+#os.system("cd /root/walkthroughs; docker-compose down; docker-compose up;")
+
 """
 * You can build each page with f multi-line strings
 * Build the pages directory from scratch
