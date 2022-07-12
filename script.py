@@ -61,12 +61,8 @@ def update_website():
   # Create an list of files from current_pdfs and track_pdf_files
   current_pdfs = create_file_list('current_pdfs')
   old_pdfs = create_file_list('track_pdf_files')
-  print(current_pdfs)
-  print(old_pdfs)
   current_pdfs.sort()
   old_pdfs.sort()
-  print(current_pdfs)
-  print(old_pdfs)
   if current_pdfs == old_pdfs:
     return False
   else:
