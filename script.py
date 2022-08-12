@@ -1,4 +1,4 @@
-#! /usr/local/bin/python3 
+#! /usr/bin/python3
 #CHANGE: This will be different in pcte
 
 """
@@ -26,16 +26,7 @@ import os
 from os import listdir
 from os.path import isfile, join
 
-# This is the volume directory in ubuntu server 
-# Example: 
-# root_dir='/var/snap/docker/common/var-lib-docker/volumes/walkthroughs_myapp/_data
-root_dir='/Users/Tal/work/blog_website/sidebar/src'
-
-# Tracks the pdfs currently in the files directory
-file_name1 = ".current_pdfs"
-
-# Tracks the pdfs that were the files directory the last time this script ran
-file_name2 = ".track_pdf_files"
+root_dir='/var/snap/docker/common/var-lib-docker/volumes/walkthroughs_myapp/_data'
 
 # Directory that stores pdf files
 pdf_dir=f'{root_dir}/files' #***CHANGE***
@@ -72,8 +63,8 @@ Make a list of current and old, if they are not the same update, you don't need 
 
 def update_website():
   # Create an list of files from current_pdfs and track_pdf_files
-  current_pdfs = create_file_list(file_name1)
-  old_pdfs = create_file_list(file_name2)
+  current_pdfs = create_file_list('current_pdfs')
+  old_pdfs = create_file_list('track_pdf_files')
   current_pdfs.sort()
   old_pdfs.sort()
   if current_pdfs == old_pdfs:
@@ -93,7 +84,7 @@ def build_pagejs():
   os.system(f"mkdir {pages_dir}")
 
   # Create a list of current pdfs from the current_pdfs file
-  current_pdfs = create_file_list(file_name1)
+  current_pdfs = create_file_list('current_pdfs')
 
   # Create a Page#.js for each pdf in the pdf_dir
   for pdf in current_pdfs:
@@ -138,7 +129,7 @@ def build_routesjs():
   routes_string = """export const routes = [\n{path: "/",main: () => <Home />,},"""
 
   # Create a list of current pdfs from the current_pdfs file
-  current_pdfs = create_file_list(file_name1)
+  current_pdfs = create_file_list('current_pdfs')
 
   # Build import string
   for pdf in current_pdfs:
@@ -160,7 +151,7 @@ def build_appjs():
   import { Route, Routes, Link } from "react-router-dom";
   import { routes } from './components/Routes'
   """
-  file_list = create_file_list(file_name1)
+  file_list = create_file_list('current_pdfs')
   file_list.insert(0,"")
   #Strip off .pdf for the tab names
   name_list = []
@@ -180,7 +171,7 @@ export default function App() {
   appjs_string4 = ""
 
   # Create a list of current pdfs from the current_pdfs file
-  current_pdfs = create_file_list(file_name1)
+  current_pdfs = create_file_list('current_pdfs')
   # Build links
   page_num = 1
   for pdf in current_pdfs:
@@ -213,7 +204,8 @@ export default function App() {
   f.close()
 
 # Create a file of current pdfs
-trackpdfs(file_name1)
+trackpdfs('current_pdfs')
+
 
 
 # Check for changes to files (ie, rename, deletions, additions)
@@ -228,8 +220,7 @@ else:
 build_pagejs()
 build_routesjs()
 build_appjs()
-#os.system("cd /root/walkthroughs; docker-compose down; docker-compose up;")
-
+os.system("cd /root/walkthroughs; docker-compose down; docker-compose up -d;")
 """
 * You can build each page with f multi-line strings
 * Build the pages directory from scratch
@@ -240,6 +231,6 @@ build_appjs()
 
 
 # Update track_pdf_files with current list of pdfs in pdf_dir
-trackpdfs(file_name2)
+trackpdfs('track_pdf_files')
 
 
