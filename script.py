@@ -29,7 +29,7 @@ from os.path import isfile, join
 # This is the volume directory in ubuntu server 
 # Example: 
 # root_dir='/var/snap/docker/common/var-lib-docker/volumes/walkthroughs_myapp/_data
-root_dir='/Users/Tal/work/blog_website/sidebar/src'
+root_dir='/Users/Tal/work/walkthroughsv2/sidebar/src'
 
 # Tracks the pdfs currently in the files directory
 file_name1 = ".current_pdfs"
@@ -119,7 +119,7 @@ def build_pagejs():
 
   # Create the home page in the pages_dir
   home_page = """export default function Home() {
-      return <h1>Home</h1>
+      return <div className="homeContent"><h1>Home</h1><p>This is some really cool content on the home page</p></div>
   }
   """
   home_page_name = pages_dir+"/Home.js"
@@ -172,7 +172,7 @@ def build_appjs():
 export default function App() {
   return (
     <div>
-      <Link className="site-title" to="/">Site Title</Link>
+      <Link className="site-title" to="/">Walkthroughs</Link>
     <div className="wrapper">
       <div className="sidebar">
         <ul className="nav">
@@ -184,7 +184,7 @@ export default function App() {
   # Build links
   page_num = 1
   for pdf in current_pdfs:
-    appjs_string4 += f"""\n<li><Link to="Page{page_num}">{{filename[{page_num}]}}</Link></li>"""
+    appjs_string4 += f"""\n<li className="pdfTab"><Link  to="Page{page_num}"><div className="pdfTab2">{{filename[{page_num}]}}</div></Link></li>"""
     page_num += 1
 
   appjs_string5 = """
