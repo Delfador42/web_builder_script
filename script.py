@@ -26,6 +26,9 @@ import os
 from os import listdir
 from os.path import isfile, join
 
+# This is the volume directory in ubuntu server 
+# Example: 
+# root_dir='/var/snap/docker/common/var-lib-docker/volumes/walkthroughs_myapp/_data
 root_dir='/Users/Tal/work/blog_website/sidebar/src'
 
 # Tracks the pdfs currently in the files directory
