@@ -29,7 +29,7 @@ from os.path import isfile, join
 # This is the volume directory in ubuntu server 
 # Example: 
 # root_dir='/var/snap/docker/common/var-lib-docker/volumes/walkthroughs_myapp/_data
-root_dir='/Users/Tal/work/walkthroughsv2/sidebar/src'
+root_dir='/Users/Tal/work/walkthroughsv2/walkthroughs/src'
 
 # Tracks the pdfs currently in the files directory
 file_name1 = ".current_pdfs"
@@ -58,6 +58,8 @@ def create_file_list(file_name):
   f = open(file_name, "r")
   pdfs = f.read().splitlines()
   f.close()
+  global pdf_count
+  pdf_count = len(pdfs)
   return(pdfs)
 
 """
@@ -119,7 +121,7 @@ def build_pagejs():
 
   # Create the home page in the pages_dir
   home_page = """export default function Home() {
-      return <div className="homeContent"><h1>Home</h1><p>This is some really cool content on the home page</p></div>
+      return <div className="homeContent"><h1>Walkthroughs</h1><p>This is where you can find all your walkthroughs.</p></div>
   }
   """
   home_page_name = pages_dir+"/Home.js"
@@ -159,35 +161,65 @@ def build_appjs():
   appjs_string1 = """import * as React from "react";
   import { Route, Routes, Link } from "react-router-dom";
   import { routes } from './components/Routes'
+  import { useState } from 'react';
   """
   file_list = create_file_list(file_name1)
   file_list.insert(0,"")
   #Strip off .pdf for the tab names
   name_list = []
+  state="isActive"
+  changeState="setIsActive"
+  handleClick="handleClick"
+  appjs_string4 = ""
+  appjs_string5 = ""
+  state_num = 1
   for file in file_list:
     name = os.path.splitext(file)[0]
     name_list.append(name)
-  appjs_string2 = f""" var filename ={name_list} ; """
-  appjs_string3 = """
-export default function App() {
+    stateName = state + str(state_num) 
+    changeStateName = changeState + str(state_num)
+    handleClickName = handleClick + str(state_num)
+    state_num += 1
+    appjs_string2 = f"""  var filename ={name_list} ; """
+    appjs_string3 = """
+    export default function App() {
+    """
+    
+    appjs_string4 += f"""const [{stateName}, {changeStateName}] = useState(false);
+    """
+
+
+    state_list = ""
+    for i in range(pdf_count):
+        if i == state_num - 2:
+            continue
+        state_list += f"{changeState}{i+1}(false);\n"
+    appjs_string5 += f"""const {handleClickName} = () => {{
+    {changeStateName}(true)
+    {state_list}
+    }};
+    """
+
+
+    appjs_string6 = f"""
   return (
     <div>
       <Link className="site-title" to="/">Walkthroughs</Link>
     <div className="wrapper">
       <div className="sidebar">
         <ul className="nav">
-"""
-  appjs_string4 = ""
+  """
 
+  appjs_string7 = ""
   # Create a list of current pdfs from the current_pdfs file
   current_pdfs = create_file_list(file_name1)
   # Build links
   page_num = 1
   for pdf in current_pdfs:
-    appjs_string4 += f"""\n<li className="pdfTab"><Link  to="Page{page_num}"><div className="pdfTab2">{{filename[{page_num}]}}</div></Link></li>"""
+    appjs_string7 += f"""\n<li className="pdfTab" ><Link  onClick=\u007bhandleClick{page_num}\u007d style=\u007b\u007bcolor: isActive{page_num} ? 'red' : '',\u007d\u007d className="tab" to="Page{page_num}"><div  className="pdfTab2">{{filename[{page_num}]}}</div></Link></li>"""
     page_num += 1
 
-  appjs_string5 = """
+  appjs_string8 = """
         </ul>
         <Routes>
           {routes.map(({ path }) => (
@@ -207,7 +239,7 @@ export default function App() {
   );
 }
 """
-  appjs_string = appjs_string1 + appjs_string2 + appjs_string3 + appjs_string4 + appjs_string5
+  appjs_string = appjs_string1 + appjs_string2 + appjs_string3 + appjs_string4 + appjs_string5 + appjs_string6 + appjs_string7 + appjs_string8
   with open(appjs, 'w') as f: 
         f.write(appjs_string)
   f.close()
@@ -219,11 +251,12 @@ trackpdfs(file_name1)
 # Check for changes to files (ie, rename, deletions, additions)
 # Rebuild the site with list of pdfs every time a change is made
 # Compare lists 
-if update_website():
-  print("The website updates")
-  #print(build_page())
-else:
-  print("The website does not update")
+# Use if making a daemon
+#if update_website():
+#  print("The website updates")
+#  #print(build_page())
+#else:
+#  print("The website does not update")
 
 build_pagejs()
 build_routesjs()
